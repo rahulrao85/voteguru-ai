@@ -121,25 +121,29 @@ gcloud run deploy voteguru-ai \
 
 ---
 
-## 📝 LinkedIn Post (Weekend Learning Format)
+## 📝 LinkedIn Post (Final Submission Format)
 
-> Spent some time this weekend exploring the new **Google Gemini 2.0 Flash API** and deploying serverless containers on **Google Cloud Run**. ☁️🚀
+> *(Note: Make sure to attach a screenshot of the app running or your VS Code setup to this post!)*
 >
-> To test out real-time token streaming (SSE) and strict AI guardrails, I built a small, multilingual educational assistant that answers questions about the Indian election process (voter registration, EVMs, NOTA, etc.) in English, Hindi, and Hinglish.
+> Spent the weekend exploring the new **Google Gemini 2.0 Flash API** and deploying serverless applications on **Google Cloud Run**. ☁️🚀
 >
-> 🛠️ Tech Stack explored:
-> - **Google Gemini 2.0 Flash** (for multilingual AI reasoning)
-> - **Google Cloud Run** (for serverless, auto-scaling deployment)
-> - **Google Cloud Logging SDK** (for backend observability)
-> - **Node.js + Vanilla JS** (with Server-Sent Events for streaming)
+> **💡 The Build:** 
+> I built a multilingual AI assistant that answers questions about the Indian election process (voter registration, EVMs, NOTA, etc.) in English, Hindi, and Hinglish. 
 >
-> It was a great hands-on exercise in building secure, rate-limited, and guardrailed LLM applications. 
+> **🧠 Thought Process & Tools Chosen:**
+> My main goal was testing strict AI guardrails and real-time streaming. 
+> - I chose **Gemini 2.0 Flash** for its speed and native multilingual reasoning capabilities.
+> - I used **Server-Sent Events (SSE)** in Node.js to stream the responses directly to the frontend for a fast, ChatGPT-like UX.
+> - I deployed via **Google Cloud Run** for auto-scaling and zero server management. 
+> - For observability, I integrated the **Google Cloud Logging SDK** to capture structured telemetry from the backend.
+>
+> It was an excellent hands-on exercise in building secure, rate-limited LLM applications!
 >
 > 🔗 Live Demo: https://voteguru-ai-951988248887.asia-south1.run.app
 >
-> #GoogleAI #GeminiAPI #CloudRun #NodeJS #WebDevelopment #BuildWithGemini
+> #BuildwithAI #PromptWarsVirtual #GoogleCloud #NodeJS
 >
-> @Google for Developers @Hack2skill
+> @googlefordevelopers @hack2skill
 
 ---
 
