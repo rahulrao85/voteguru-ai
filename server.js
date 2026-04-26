@@ -65,7 +65,7 @@ function appLog(severity, message, metadata = {}) {
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-const MODEL_NAME = 'gemini-2.0-flash';
+const MODEL_NAME = 'gemini-2.5-flash';
 
 // ---------------------------------------------------------------------------
 // Middleware
