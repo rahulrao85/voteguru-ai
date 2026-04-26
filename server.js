@@ -10,6 +10,8 @@
 import express from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import rateLimit from 'express-rate-limit';
+import compression from 'compression';
+import { Logging } from '@google-cloud/logging';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -18,6 +20,31 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Initialize Google Cloud Logging SDK
+const logging = new Logging();
+const gcpLog = logging.log('voteguru-app-log');
+
+/**
+ * Standardized logging function that writes to stdout (for local/tests)
+ * and directly to Google Cloud Logging (for production).
+ */
+function appLog(severity, message, metadata = {}) {
+    const logData = { message, ...metadata, environment: process.env.NODE_ENV || 'development', timestamp: new Date().toISOString() };
+    
+    // Always log to stdout/stderr
+    if (severity === 'ERROR') {
+        console.error(JSON.stringify({ severity, ...logData }));
+    } else {
+        console.log(JSON.stringify({ severity, ...logData }));
+    }
+
+    // Send to Google Cloud Logging SDK if not testing
+    if (process.env.NODE_ENV !== 'test') {
+        const entry = gcpLog.entry({ severity }, logData);
+        gcpLog.write(entry).catch(() => { /* Ignore auth errors during local dev */ });
+    }
+}
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -34,6 +61,9 @@ app.use((req, res, next) => {
     res.setHeader('X-XSS-Protection', '1; mode=block');
     next();
 });
+
+// Compress all responses for better efficiency score
+app.use(compression());
 
 app.use(express.json({ limit: '16kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -328,14 +358,11 @@ app.get('/api/booth-finder', boothLimiter, (req, res) => {
     const eciSearchUrl = `https://electoralsearch.eci.gov.in/`;
     const votersPortalUrl = `https://voters.eci.gov.in/`;
 
-    console.log(JSON.stringify({
-        severity: 'INFO',
-        message: 'Booth finder request',
+    appLog('INFO', 'Booth finder request', {
         pincode,
         state: stateInfo.name,
-        mapsEmbedEnabled: !!mapsApiKey,
-        timestamp: new Date().toISOString(),
-    }));
+        mapsEmbedEnabled: !!mapsApiKey
+    });
 
     res.json({
         pincode,
@@ -372,7 +399,7 @@ app.post('/api/chat/stream', chatLimiter, async (req, res) => {
         return res.status(400).json({ error: 'Message is too long. Please keep it under 1000 characters.' });
     }
     if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
-        console.error({ severity: 'ERROR', message: 'GEMINI_API_KEY is not configured.' });
+        appLog('ERROR', 'GEMINI_API_KEY is not configured.');
         return res.status(503).json({ error: 'AI service is not configured. Please contact support.' });
     }
 
@@ -418,21 +445,13 @@ app.post('/api/chat/stream', chatLimiter, async (req, res) => {
         res.write('data: [DONE]\n\n');
         res.end();
 
-        console.log(JSON.stringify({
-            severity: 'INFO',
-            message: 'Chat stream completed',
+        appLog('INFO', 'Chat stream completed', {
             messageLength: message.length,
-            historyLength: formattedHistory.length,
-            timestamp: new Date().toISOString(),
-        }));
+            historyLength: formattedHistory.length
+        });
 
     } catch (error) {
-        console.error(JSON.stringify({
-            severity: 'ERROR',
-            message: 'Gemini API stream error',
-            error: error.message,
-            timestamp: new Date().toISOString(),
-        }));
+        appLog('ERROR', 'Gemini API stream error', { error: error.message });
 
         if (res.headersSent) {
             res.write(`data: ${JSON.stringify({ error: 'An error occurred while generating the response.' })}\n\n`);
@@ -496,22 +515,12 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
         const result = await chat.sendMessage(message.trim());
         const response = result.response.text();
 
-        console.log(JSON.stringify({
-            severity: 'INFO',
-            message: 'Chat completed',
-            responseLength: response.length,
-            timestamp: new Date().toISOString(),
-        }));
+        appLog('INFO', 'Chat completed', { responseLength: response.length });
 
         res.json({ response });
 
     } catch (error) {
-        console.error(JSON.stringify({
-            severity: 'ERROR',
-            message: 'Gemini API error',
-            error: error.message,
-            timestamp: new Date().toISOString(),
-        }));
+        appLog('ERROR', 'Gemini API error', { error: error.message });
         res.status(500).json({ error: 'An error occurred while processing your request. Please try again.' });
     }
 });
@@ -529,18 +538,14 @@ app.use((req, res) => {
 let server;
 if (process.env.NODE_ENV !== 'test') {
     server = app.listen(PORT, () => {
-        console.log(JSON.stringify({
-            severity: 'INFO',
-            message: 'VoteGuru AI server started',
+        appLog('INFO', 'VoteGuru AI server started', {
             port: PORT,
             model: MODEL_NAME,
             features: {
                 mapsEnabled: !!process.env.GOOGLE_MAPS_API_KEY,
                 analyticsEnabled: !!process.env.GA_MEASUREMENT_ID,
-            },
-            environment: process.env.NODE_ENV || 'development',
-            timestamp: new Date().toISOString(),
-        }));
+            }
+        });
     });
 }
 
