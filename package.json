@@ -12,7 +12,9 @@
   "jest": {
     "testEnvironment": "node",
     "transform": {},
-    "collectCoverageFrom": ["server.js"]
+    "collectCoverageFrom": [
+      "server.js"
+    ]
   },
   "engines": {
     "node": ">=20.0.0"
@@ -28,12 +30,14 @@
   ],
   "dependencies": {
     "@google-cloud/logging": "^11.2.1",
+    "@google-cloud/storage": "^7.19.0",
     "@google/generative-ai": "^0.24.0",
     "@googlemaps/google-maps-services-js": "^3.4.2",
     "compression": "^1.8.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^13.8.0",
     "node-cache": "^5.1.2"
   },
   "devDependencies": {

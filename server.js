@@ -12,6 +12,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 import { Logging } from '@google-cloud/logging';
+import { Storage } from '@google-cloud/storage';
+import admin from 'firebase-admin';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -24,6 +26,21 @@ const __dirname = path.dirname(__filename);
 // Initialize Google Cloud Logging SDK
 const logging = new Logging();
 const gcpLog = logging.log('voteguru-app-log');
+
+// Initialize Google Cloud Storage (for analytics/file storage capabilities)
+const storage = new Storage();
+const analyticsBucket = storage.bucket(process.env.GCS_BUCKET_NAME || 'voteguru-analytics-data');
+
+// Initialize Firebase Admin (for Authentication & Firestore capabilities)
+if (!admin.apps.length) {
+    try {
+        admin.initializeApp({
+            credential: admin.credential.applicationDefault()
+        });
+    } catch (e) {
+        // Safe fallback for local testing without credentials
+    }
+}
 
 /**
  * Standardized logging function that writes to stdout (for local/tests)
