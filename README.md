@@ -121,26 +121,23 @@ gcloud run deploy voteguru-ai \
 
 ---
 
-## 📝 LinkedIn Post (for Submission)
+## 📝 LinkedIn Post (Weekend Learning Format)
 
-> 🗳️ Just submitted **VoteGuru AI** for **#PromptWarsVirtual** Challenge 2!
+> Spent some time this weekend exploring the new **Google Gemini 2.0 Flash API** and deploying serverless containers on **Google Cloud Run**. ☁️🚀
 >
-> Built an intelligent election education assistant for Indian voters — answering questions about voter registration (Form 6, EPIC), EVMs, VVPAT, NOTA, the Model Code of Conduct, and much more — in **English, Hindi, and Hinglish**.
+> To test out real-time token streaming (SSE) and strict AI guardrails, I built a small, multilingual educational assistant that answers questions about the Indian election process (voter registration, EVMs, NOTA, etc.) in English, Hindi, and Hinglish.
 >
-> 🛠️ Google AI Stack:
-> - **Google Gemini 2.0 Flash** — multilingual AI reasoning and real-time streaming responses
-> - **Google Cloud Run** — serverless, auto-scaling deployment
-> - **Google Cloud Logging** — structured observability
-> - **Vertex AI / AI Studio** — API key management
+> 🛠️ Tech Stack explored:
+> - **Google Gemini 2.0 Flash** (for multilingual AI reasoning)
+> - **Google Cloud Run** (for serverless, auto-scaling deployment)
+> - **Google Cloud Logging SDK** (for backend observability)
+> - **Node.js + Vanilla JS** (with Server-Sent Events for streaming)
 >
-> 💡 Key design decisions:
-> - Strict guardrails scoped to ECI-conducted elections only (no hallucination on local body rules)
-> - Server-Sent Events (SSE) for real-time token streaming
-> - Rate limiting, input validation, and ARIA accessibility baked in
+> It was a great hands-on exercise in building secure, rate-limited, and guardrailed LLM applications. 
 >
-> 🔗 Live: https://voteguru-ai-951988248887.asia-south1.run.app
+> 🔗 Live Demo: https://voteguru-ai-951988248887.asia-south1.run.app
 >
-> #GoogleAI #GeminiAPI #CloudRun #ElectionEducation #VoterEmpowerment #IndianElections #PromptWars #Hack2skill #BuildWithGemini
+> #GoogleAI #GeminiAPI #CloudRun #NodeJS #WebDevelopment #BuildWithGemini
 >
 > @Google for Developers @Hack2skill
 
