@@ -138,7 +138,7 @@ gcloud run deploy voteguru-ai \
 > - Server-Sent Events (SSE) for real-time token streaming
 > - Rate limiting, input validation, and ARIA accessibility baked in
 >
-> 🔗 Live: [YOUR_CLOUD_RUN_URL]
+> 🔗 Live: https://voteguru-ai-951988248887.asia-south1.run.app
 >
 > #GoogleAI #GeminiAPI #CloudRun #ElectionEducation #VoterEmpowerment #IndianElections #PromptWars #Hack2skill #BuildWithGemini
 >
