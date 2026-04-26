@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VoteGuru AI — Your intelligent, multilingual guide to the Indian election process. Find your polling booth and learn about voter registration, EVMs, MCC, and more.">
+    <meta name="keywords" content="India elections, voter registration, EVM, Election Commission of India, Lok Sabha, Vidhan Sabha, voter ID, NOTA, polling booth finder">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="VoteGuru AI | Indian Election Assistant & Booth Finder">
+    <meta property="og:description" content="Ask any question about Indian General and State elections in English, Hindi, or Hinglish. Find your nearest polling booth by PIN code.">
+    <meta property="og:type" content="website">
+    <title>VoteGuru AI | Your Indian Election Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Analytics loaded dynamically from /api/config to keep Measurement ID in env -->
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- ================================================================
+             HEADER
+        ================================================================ -->
+        <header class="header" role="banner">
+            <div class="header-inner">
+                <div class="logo-group">
+                    <div class="logo-icon-wrap">
+                        <i class="fa-solid fa-check-to-slot" aria-hidden="true"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1 class="logo">VoteGuru <span class="logo-ai">AI</span></h1>
+                        <p class="subtitle">Empowering the Indian Voter · <span class="lang-badge">EN · हि · Hinglish</span></p>
+                    </div>
+                </div>
+                <button id="clear-btn" class="clear-btn" aria-label="Clear conversation" title="Clear conversation">
+                    <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                </button>
+            </div>
+            <!-- Tri-color accent bar (Indian flag colors) -->
+            <div class="tri-bar" aria-hidden="true">
+                <span class="bar-saffron"></span>
+                <span class="bar-white"></span>
+                <span class="bar-green"></span>
+            </div>
+        </header>
+
+        <!-- ================================================================
+             TAB NAVIGATION
+        ================================================================ -->
+        <nav class="tab-bar" role="tablist" aria-label="App sections">
+            <button
+                id="tab-chat"
+                class="tab active"
+                role="tab"
+                aria-selected="true"
+                aria-controls="panel-chat"
+                data-tab="chat"
+                data-ga-event="tab_chat_clicked"
+            >
+                <i class="fa-solid fa-comments" aria-hidden="true"></i>
+                <span>Ask VoteGuru</span>
+            </button>
+            <button
+                id="tab-booth"
+                class="tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-booth"
+                data-tab="booth"
+                data-ga-event="tab_booth_clicked"
+            >
+                <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+                <span>Find My Booth</span>
+            </button>
+        </nav>
+
+        <!-- ================================================================
+             PANEL 1: CHAT
+        ================================================================ -->
+        <main
+            class="panel chat-panel active"
+            id="panel-chat"
+            role="tabpanel"
+            aria-labelledby="tab-chat"
+            aria-label="Election assistant chat"
+        >
+            <div id="chat-box" class="chat-box" role="log" aria-live="polite" aria-label="Chat messages">
+                <!-- Welcome Message -->
+                <div class="message ai-message" role="article">
+                    <div class="avatar ai-avatar" aria-hidden="true">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>🙏 <strong>Namaste!</strong> I am <strong>VoteGuru AI</strong> — your personal guide to Indian elections.</p>
+                        <p>I can help you with:</p>
+                        <ul>
+                            <li>🗳️ Voter registration &amp; Voter ID (Form 6, EPIC)</li>
+                            <li>📋 Election day procedures, EVMs &amp; VVPAT</li>
+                            <li>📜 Model Code of Conduct (MCC) &amp; NOTA</li>
+                            <li>🌍 NRI voting, postal ballots &amp; much more</li>
+                        </ul>
+                        <p><em>Aap apne sawal Hindi ya Hinglish mein bhi pooch sakte hain!</em> 😊</p>
+                    </div>
+                </div>
+
+                <!-- Suggestion Chips -->
+                <div class="suggestions-container" id="suggestions" role="complementary" aria-label="Suggested questions">
+                    <p class="suggestions-label">Try asking:</p>
+                    <div id="chips-wrapper" class="chips-wrapper"></div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="loading" class="loading-indicator hidden" aria-label="VoteGuru AI is thinking" role="status">
+                <div class="avatar ai-avatar small" aria-hidden="true">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div class="typing-bubble">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+        </main>
+
+        <!-- ================================================================
+             PANEL 2: POLLING BOOTH FINDER
+        ================================================================ -->
+        <section
+            class="panel booth-panel"
+            id="panel-booth"
+            role="tabpanel"
+            aria-labelledby="tab-booth"
+            aria-label="Polling booth finder"
+            hidden
+        >
+            <div class="booth-finder-wrap">
+
+                <!-- Hero Info -->
+                <div class="booth-hero">
+                    <div class="booth-hero-icon" aria-hidden="true">🗺️</div>
+                    <h2 class="booth-hero-title">Find Your Polling Booth</h2>
+                    <p class="booth-hero-subtitle">Enter your 6-digit PIN code to locate polling stations and voter services near you — powered by <strong>Google Maps</strong>.</p>
+                </div>
+
+                <!-- PIN Code Search Form -->
+                <form class="pincode-form" id="pincode-form" novalidate aria-label="PIN code search form">
+                    <div class="pincode-input-group">
+                        <label for="pincode-input" class="visually-hidden">Enter your 6-digit PIN code</label>
+                        <div class="pincode-input-wrap">
+                            <i class="fa-solid fa-location-dot pincode-icon" aria-hidden="true"></i>
+                            <input
+                                type="text"
+                                id="pincode-input"
+                                class="pincode-input"
+                                placeholder="Enter 6-digit PIN code (e.g., 400001)"
+                                maxlength="6"
+                                pattern="[0-9]{6}"
+                                inputmode="numeric"
+                                autocomplete="postal-code"
+                                aria-describedby="pincode-hint"
+                            >
+                        </div>
+                        <button type="submit" id="pincode-search-btn" class="pincode-search-btn" aria-label="Search for polling booths">
+                            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                            Search
+                        </button>
+                    </div>
+                    <p id="pincode-hint" class="pincode-hint">e.g., 110001 for New Delhi · 400001 for Mumbai</p>
+                    <p id="pincode-error" class="pincode-error hidden" role="alert" aria-live="assertive"></p>
+                </form>
+
+                <!-- Results Area (shown after search) -->
+                <div id="booth-results" class="booth-results hidden">
+
+                    <!-- State badge -->
+                    <div id="state-badge" class="state-badge">
+                        <i class="fa-solid fa-flag" aria-hidden="true"></i>
+                        <span id="state-name">Detecting state...</span>
+                    </div>
+
+                    <!-- Google Maps Embed -->
+                    <div class="map-frame-wrap">
+                        <!-- Shown when GOOGLE_MAPS_API_KEY is configured -->
+                        <iframe
+                            id="map-iframe"
+                            class="map-iframe hidden"
+                            title="Google Maps — Polling Stations Near You"
+                            allowfullscreen
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                        ></iframe>
+
+                        <!-- Fallback shown when no Maps API key -->
+                        <div id="map-fallback" class="map-fallback hidden">
+                            <div class="map-fallback-inner">
+                                <div class="map-fallback-icon" aria-hidden="true">🗺️</div>
+                                <p class="map-fallback-title">Google Maps</p>
+                                <p class="map-fallback-text">Click below to open Google Maps and search for polling stations near your PIN code.</p>
+                                <a id="maps-open-link" href="#" target="_blank" rel="noopener noreferrer" class="maps-open-btn">
+                                    <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                                    Open in Google Maps
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="booth-actions" role="group" aria-label="Voter resources">
+                        <a
+                            id="eci-portal-link"
+                            href="https://electoralsearch.eci.gov.in/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="booth-action-btn btn-eci"
+                            data-ga-event="eci_portal_clicked"
+                        >
+                            <i class="fa-solid fa-search" aria-hidden="true"></i>
+                            ECI Voter Search
+                        </a>
+                        <a
+                            id="voters-portal-link"
+                            href="https://voters.eci.gov.in/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="booth-action-btn btn-voters"
+                            data-ga-event="voters_portal_clicked"
+                        >
+                            <i class="fa-solid fa-id-card" aria-hidden="true"></i>
+                            Voters Portal
+                        </a>
+                        <a
+                            href="tel:1950"
+                            class="booth-action-btn btn-helpline"
+                            data-ga-event="helpline_clicked"
+                        >
+                            <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                            Helpline: 1950
+                        </a>
+                        <a
+                            id="state-ceo-link"
+                            href="https://electoralsearch.eci.gov.in/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="booth-action-btn btn-state"
+                            data-ga-event="state_ceo_clicked"
+                        >
+                            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+                            State CEO Office
+                        </a>
+                    </div>
+
+                    <!-- Info Note -->
+                    <p class="booth-note">
+                        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                        For the <strong>exact</strong> polling booth address, use the official
+                        <a href="https://electoralsearch.eci.gov.in/" target="_blank" rel="noopener noreferrer">ECI Voter Search Portal</a>
+                        with your Voter ID or mobile number.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================================================================
+             INPUT AREA (Chat only)
+        ================================================================ -->
+        <footer class="input-area" id="chat-input-area" role="contentinfo">
+            <div class="input-wrapper">
+                <label for="user-input" class="visually-hidden">Ask a question about Indian elections</label>
+                <input
+                    type="text"
+                    id="user-input"
+                    placeholder="Ask about elections, Voter ID, EVM, MCC..."
+                    autocomplete="off"
+                    maxlength="1000"
+                    aria-label="Your question"
+                >
+                <button id="send-btn" class="send-btn" aria-label="Send message">
+                    <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="input-footer">
+                <span class="disclaimer">For General &amp; State Elections only · Powered by Google Gemini AI</span>
+                <span class="char-count" id="char-count">0 / 1000</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

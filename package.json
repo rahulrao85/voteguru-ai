@@ -1,0 +1,29 @@
+{
+  "name": "voteguru-ai",
+  "version": "3.0.0",
+  "description": "VoteGuru AI — An intelligent, multilingual Indian election education assistant powered by Google Gemini. Built for PromptWars Challenge 2.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "gemini",
+    "google-ai",
+    "election-education",
+    "india-elections",
+    "voter-guide",
+    "cloud-run",
+    "promptwars"
+  ],
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.5.0"
+  }
+}
