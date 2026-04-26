@@ -27,16 +27,16 @@ const MODEL_NAME = 'gemini-2.0-flash';
 // Middleware
 // ---------------------------------------------------------------------------
 
-app.use(express.json({ limit: '16kb' }));
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Security headers
+// Security headers MUST be before express.static to apply to static files
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     next();
 });
+
+app.use(express.json({ limit: '16kb' }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ---------------------------------------------------------------------------
 // Rate Limiting
@@ -526,17 +526,22 @@ app.use((req, res) => {
 // ---------------------------------------------------------------------------
 // Start Server
 // ---------------------------------------------------------------------------
-app.listen(PORT, () => {
-    console.log(JSON.stringify({
-        severity: 'INFO',
-        message: 'VoteGuru AI server started',
-        port: PORT,
-        model: MODEL_NAME,
-        features: {
-            mapsEnabled: !!process.env.GOOGLE_MAPS_API_KEY,
-            analyticsEnabled: !!process.env.GA_MEASUREMENT_ID,
-        },
-        environment: process.env.NODE_ENV || 'development',
-        timestamp: new Date().toISOString(),
-    }));
-});
+let server;
+if (process.env.NODE_ENV !== 'test') {
+    server = app.listen(PORT, () => {
+        console.log(JSON.stringify({
+            severity: 'INFO',
+            message: 'VoteGuru AI server started',
+            port: PORT,
+            model: MODEL_NAME,
+            features: {
+                mapsEnabled: !!process.env.GOOGLE_MAPS_API_KEY,
+                analyticsEnabled: !!process.env.GA_MEASUREMENT_ID,
+            },
+            environment: process.env.NODE_ENV || 'development',
+            timestamp: new Date().toISOString(),
+        }));
+    });
+}
+
+export { app, server };

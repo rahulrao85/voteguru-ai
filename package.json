@@ -6,7 +6,13 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "cross-env NODE_ENV=development node --watch server.js",
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {},
+    "collectCoverageFrom": ["server.js"]
   },
   "engines": {
     "node": ">=20.0.0"
@@ -21,9 +27,18 @@
     "promptwars"
   ],
   "dependencies": {
+    "@google-cloud/logging": "^11.2.1",
     "@google/generative-ai": "^0.24.0",
+    "@googlemaps/google-maps-services-js": "^3.4.2",
+    "compression": "^1.8.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
-    "express-rate-limit": "^7.5.0"
+    "express-rate-limit": "^7.5.0",
+    "node-cache": "^5.1.2"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2"
   }
 }
